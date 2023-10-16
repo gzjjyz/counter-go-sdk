@@ -6,6 +6,7 @@ import (
 )
 
 const KeyPrefix = "counter_"
+const ChannelSize = 100000
 
 type RedisProducer struct {
 	redisClient *redis.Client
@@ -20,7 +21,9 @@ type RedisConfig struct {
 }
 
 func NewRedisProducer(config RedisConfig) (Producer, error) {
-	p := &RedisProducer{}
+	p := &RedisProducer{
+		ch: make(chan *Data, ChannelSize),
+	}
 
 	p.redisClient = redis.NewClient(&redis.Options{
 		Addr:     config.Host,
