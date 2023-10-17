@@ -1,11 +1,12 @@
 package counter
 
 import (
-	"gopkg.in/redis.v5"
+	"context"
+	"github.com/redis/go-redis/v9"
 	"sync"
 )
 
-const KeyPrefix = "counter_"
+const KeyPrefix = "log_"
 const ChannelSize = 100000
 
 type RedisProducer struct {
@@ -30,7 +31,7 @@ func NewRedisProducer(config RedisConfig) (Producer, error) {
 		Password: config.Password,
 		DB:       config.DB,
 	})
-	if err := p.redisClient.Ping().Err(); nil != err {
+	if err := p.redisClient.Ping(context.Background()).Err(); nil != err {
 		return nil, err
 	}
 	return p, p.init()
@@ -64,7 +65,7 @@ func (p *RedisProducer) init() error {
 				if !ok {
 					return
 				}
-				p.redisClient.RPush(KeyPrefix+data.topic, string(data.buf))
+				p.redisClient.RPush(context.Background(), KeyPrefix+data.topic, string(data.buf))
 			}
 		}
 	}()
