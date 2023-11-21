@@ -6,7 +6,6 @@ import (
 	"sync"
 )
 
-const KeyPrefix = "log_"
 const ChannelSize = 100000
 
 type RedisProducer struct {
@@ -65,7 +64,7 @@ func (p *RedisProducer) init() error {
 				if !ok {
 					return
 				}
-				p.redisClient.RPush(context.Background(), KeyPrefix+data.topic, string(data.buf))
+				p.redisClient.RPush(context.Background(), data.topic, string(data.buf))
 			}
 		}
 	}()
